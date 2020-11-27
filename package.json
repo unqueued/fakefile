@@ -31,7 +31,8 @@
   },
   "homepage": "https://github.com/kvz/fakefile#readme",
   "dependencies": {
-    "fs-extra": "0.26.5"
+    "fs-extra": "0.26.5",
+    "shelljs": "^0.8.4"
   },
   "devDependencies": {
     "babel-eslint": "10.1.0",
