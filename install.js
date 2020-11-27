@@ -11,10 +11,12 @@
 const fs     = require('fs-extra')
 const path   = require('path')
 const crypto = require('crypto')
+const shell = require('shelljs')
 
 const rootDir        = process.env.FAKEFILE_PROJECT || path.normalize(path.join(__dirname, '..', '..'))
 const dstPackagePath = rootDir + '/package.json'
 const dstMakePath    = rootDir + '/Makefile'
+const altDstMakePath = rootDir + '/fakefile.mk'
 let   dstPackage     = {}
 let   dstMakeBody    = ''
 let   dstMakeSha     = ''
@@ -63,5 +65,15 @@ if (!dstMakeBody || knownShas.indexOf(dstMakeSha) > -1) {
 }
 
 console.error(`I found a Makefile at ${dstMakePath} that I do not know. (sha1: ${dstMakeSha})`)
-console.error(`I will not risk overwriting it. `)
-console.error(`Remove it first manually and install Fakefile again. `)
+console.error(`Attempting to copy to supplimental make script instead.`)
+
+// Prepend include string into existing Makefile
+shell.ShellString(
+  [
+    "include fakefile.mk\n",
+    "# Inserted by fakefile\n",
+    "\n",
+    shell.cat(dstMakePath).toString()
+  ]
+).to(dstMakePath)
+shell.cp(srcMakePath, altDstMakePath)
